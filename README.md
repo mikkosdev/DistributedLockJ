@@ -17,13 +17,13 @@ WORK IN PROGRESS - NOT YET RELEASED.
 
 ## To Do
 
-- Add support for removing old entries during startup
+- [ ] Add support for removing old entries during startup
   - Use a special 'maintenance' dlock for that which locks all entries for the process using the lock
-- Add support for Azure Storage Account
-- Add support for Azure Cosmos DB
-
-## Tips
-
-- You can see (later) how this is used in practice in my other projects:
-  - MegalomaniaK
-  - MigratorJ
+- [ ] Add support for Azure Storage Account
+- [ ] Add support for Azure Cosmos DB
+- [ ] Plan how to provide configuration
+  - Environment variables
+  - Should settings file be supported?
+- [ ] Investigate if transactions are needed
+  - Azure Table Storage (not needed)
+  - Azure Cosmos DB?
