@@ -1,11 +1,16 @@
 package org.mikkosdev.distributedlockj;
 
+import org.mikkosdev.distributedlockj.database.AzureTableStorageClient;
 import org.mikkosdev.distributedlockj.database.IDatabaseClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DistributedLockCollection {
+
+    protected final Logger logger = LoggerFactory.getLogger(DistributedLockCollection.class);
 
     private List<DistributedLock> locks = new ArrayList<>();
     private IDatabaseClient dbClient;
@@ -17,8 +22,16 @@ public class DistributedLockCollection {
 
     public DistributedLock tryAcquire(String name) {
         var dLock = new DistributedLock(name);
+        dLock.setParent(this);
+
         dbClient.addDistributedLock(dLock);
 
         return dLock;
+    }
+
+    public void release(DistributedLock distributedLock) {
+        logger.debug("DistributedLockCollection.release()");
+
+        dbClient.deleteDistributedLock(distributedLock);
     }
 }

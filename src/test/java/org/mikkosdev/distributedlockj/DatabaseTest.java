@@ -17,6 +17,9 @@ public class DatabaseTest {
     // Add row to database
 
     // Drop table
+    protected void destroyDistributedLockTable() {
+        dbClient.destroyDistributedLockTable();
+    }
 
     // Count rows in table
     // TODO: Create actual count() method for better performance

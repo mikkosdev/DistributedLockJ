@@ -11,6 +11,11 @@ public class CosmosDbClient implements IDatabaseClient {
     }
 
     @Override
+    public void deleteDistributedLock(DistributedLock distributedLock) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void destroyDistributedLockTable() {
         throw new UnsupportedOperationException();
     }

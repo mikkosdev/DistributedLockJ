@@ -5,8 +5,14 @@ import com.azure.data.tables.TableServiceClient;
 import com.azure.data.tables.TableServiceClientBuilder;
 import com.azure.data.tables.models.ListEntitiesOptions;
 import com.azure.data.tables.models.TableEntity;
+import com.azure.data.tables.models.TableErrorCode;
+import com.azure.data.tables.models.TableServiceException;
 import org.mikkosdev.distributedlockj.DatabaseConfiguration;
 import org.mikkosdev.distributedlockj.DistributedLock;
+import org.mikkosdev.distributedlockj.exception.DistributedLockInUseException;
+import org.mikkosdev.distributedlockj.exception.DistributedLockNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +22,10 @@ import java.util.List;
  */
 public class AzureTableStorageClient implements IDatabaseClient {
 
-    TableServiceClient tableServiceClient;
-    TableClient tableClient;
+    protected final Logger logger = LoggerFactory.getLogger(AzureTableStorageClient.class);
+
+    protected TableServiceClient tableServiceClient;
+    protected TableClient tableClient;
 
     private static String localDevelopmentInstance =
             """
@@ -47,10 +55,30 @@ public class AzureTableStorageClient implements IDatabaseClient {
     public void addDistributedLock(DistributedLock distributedLock) {
         TableEntity entity = new TableEntity(DatabaseConfiguration.PARTITION_KEY, distributedLock.getName())
                 .addProperty("name", distributedLock.getName());
-//                .addProperty("Price", 5.00)
-//                .addProperty("Quantity", 21);
+        try {
+            tableClient.createEntity(entity);
+        } catch (TableServiceException e) {
+            TableErrorCode errCode = e.getValue().getErrorCode();
+            if (errCode == TableErrorCode.ENTITY_ALREADY_EXISTS) {
+                throw new DistributedLockInUseException();
+            }
+        }
+    }
 
-        tableClient.createEntity(entity);
+    public void deleteDistributedLock(DistributedLock distributedLock) {
+        try {
+            tableClient.deleteEntity(DatabaseConfiguration.PARTITION_KEY, distributedLock.getName());
+        } catch (TableServiceException e) {
+            TableErrorCode errCode = e.getValue().getErrorCode();
+            if (errCode == TableErrorCode.ENTITY_NOT_FOUND) {
+                throw new DistributedLockNotFoundException();
+            }
+        } catch (IllegalArgumentException e) {
+            logger.debug("Exception " + e.getMessage());
+        }
+        finally {
+            logger.debug("deleteDistributedLock finally");
+        }
     }
 
     @Override
@@ -61,7 +89,6 @@ public class AzureTableStorageClient implements IDatabaseClient {
     public List<DistributedLock> getAllDistributedLocks() {
         List<String> propertiesToSelect = new ArrayList<>();
         propertiesToSelect.add("name");
-//        propertiesToSelect.add("Price");
 
         ListEntitiesOptions options = new ListEntitiesOptions()
                 .setFilter(String.format("PartitionKey eq '%s'", DatabaseConfiguration.PARTITION_KEY))
@@ -69,10 +96,8 @@ public class AzureTableStorageClient implements IDatabaseClient {
 
         List<DistributedLock> migrations = new ArrayList<>();
         for (TableEntity entity : tableClient.listEntities(options, null, null)) {
-//            Map<String, Object> properties = entity.getProperties();
             var name = (String) entity.getProperty("name");
             migrations.add(new DistributedLock(name));
-//            System.out.printf("%s: %.2f%n", properties.get("Product"), properties.get("Price"));
         }
         return migrations;
     }

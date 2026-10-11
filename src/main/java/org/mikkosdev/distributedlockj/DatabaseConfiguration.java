@@ -2,8 +2,12 @@ package org.mikkosdev.distributedlockj;
 
 import org.mikkosdev.distributedlockj.database.AzureTableStorageClient;
 import org.mikkosdev.distributedlockj.database.IDatabaseClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DatabaseConfiguration {
+
+    protected final Logger logger = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
     public static final String TABLE_NAME = "distributedlock";
     public static final String PARTITION_KEY = "ABC";
