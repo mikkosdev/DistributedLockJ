@@ -19,9 +19,18 @@ public class AzureTableStorageClient implements IDatabaseClient {
     TableServiceClient tableServiceClient;
     TableClient tableClient;
 
+    private static String localDevelopmentInstance =
+            """
+                    DefaultEndpointsProtocol=http;
+                    AccountName=devstoreaccount1;
+                    AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
+                    BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
+                    QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;
+                    TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;""";
+
     public AzureTableStorageClient() {
-        TableServiceClient tableServiceClient = new TableServiceClientBuilder()
-                .connectionString("localhost:10002")    // TODO: magic number
+        tableServiceClient = new TableServiceClientBuilder()
+                .connectionString(localDevelopmentInstance)    // TODO: magic number
                 .buildClient();
 
         initialize();
@@ -37,19 +46,15 @@ public class AzureTableStorageClient implements IDatabaseClient {
 
     public void addDistributedLock(DistributedLock distributedLock) {
         TableEntity entity = new TableEntity(DatabaseConfiguration.PARTITION_KEY, distributedLock.getName())
-                .addProperty("Product", "Marker Set")
-                .addProperty("Price", 5.00)
-                .addProperty("Quantity", 21);
+                .addProperty("name", distributedLock.getName());
+//                .addProperty("Price", 5.00)
+//                .addProperty("Quantity", 21);
 
         tableClient.createEntity(entity);
     }
 
     @Override
-    public void add(DistributedLock distributedLock) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void destroyMigrationsTable() {
+    public void destroyDistributedLockTable() {
         tableServiceClient.deleteTable(DatabaseConfiguration.TABLE_NAME);
     }
 

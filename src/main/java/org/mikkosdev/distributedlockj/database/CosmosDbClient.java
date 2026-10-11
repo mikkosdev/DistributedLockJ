@@ -6,12 +6,12 @@ import java.util.List;
 
 public class CosmosDbClient implements IDatabaseClient {
     @Override
-    public void add(DistributedLock distributedLock) {
+    public void addDistributedLock(DistributedLock distributedLock) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void destroyMigrationsTable() {
+    public void destroyDistributedLockTable() {
         throw new UnsupportedOperationException();
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IDatabaseClient {
 
-    public void add(DistributedLock distributedLock);
-    public void destroyMigrationsTable();
+    public void addDistributedLock(DistributedLock distributedLock);
+    public void destroyDistributedLockTable();
     public List<DistributedLock> getAllDistributedLocks();
 }
