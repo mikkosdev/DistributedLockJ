@@ -3,7 +3,8 @@ package org.mikkosdev.distributedlockj;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import javax.xml.crypto.Data;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,7 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 /**
  * Unit test for simple App.
  */
-public class AppTest {
+public class DistributedLockTest extends DatabaseTest {
 
     private DistributedLockCollection lockCollection;
 
@@ -34,5 +35,8 @@ public class AppTest {
         assertDoesNotThrow(() -> {
             DistributedLock dlock = lockCollection.tryAcquire("Hello");
         });
+
+        var rowCount = getRowCount(DatabaseConfiguration.TABLE_NAME);
+        assertEquals(1, rowCount);
     }
 }

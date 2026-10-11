@@ -5,12 +5,11 @@ import com.azure.data.tables.TableServiceClient;
 import com.azure.data.tables.TableServiceClientBuilder;
 import com.azure.data.tables.models.ListEntitiesOptions;
 import com.azure.data.tables.models.TableEntity;
-import org.mikkosdev.distributedlockj.Migration;
-import org.mikkosdev.distributedlockj.StaticValues;
+import org.mikkosdev.distributedlockj.DatabaseConfiguration;
+import org.mikkosdev.distributedlockj.DistributedLock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Code adapted from: https://learn.microsoft.com/en-us/java/api/overview/azure/data-tables-readme?view=azure-java-stable
@@ -29,15 +28,15 @@ public class AzureTableStorageClient implements IDatabaseClient {
     }
 
     private void initialize() {
-        tableClient = tableServiceClient.createTableIfNotExists(StaticValues.TABLE_NAME);
+        tableClient = tableServiceClient.createTableIfNotExists(DatabaseConfiguration.TABLE_NAME);
     }
 
     private void getTableContents() {
 
     }
 
-    public void addTableEntity(Migration migration) {
-        TableEntity entity = new TableEntity(StaticValues.PARTITION_KEY, migration.getName())
+    public void addDistributedLock(DistributedLock distributedLock) {
+        TableEntity entity = new TableEntity(DatabaseConfiguration.PARTITION_KEY, distributedLock.getName())
                 .addProperty("Product", "Marker Set")
                 .addProperty("Price", 5.00)
                 .addProperty("Quantity", 21);
@@ -45,22 +44,36 @@ public class AzureTableStorageClient implements IDatabaseClient {
         tableClient.createEntity(entity);
     }
 
-    public void destroy() {
-        tableServiceClient.deleteTable(StaticValues.TABLE_NAME);
+    @Override
+    public void add(DistributedLock distributedLock) {
+        throw new UnsupportedOperationException();
     }
 
-    public void getAllTableEntities() {
+    public void destroyMigrationsTable() {
+        tableServiceClient.deleteTable(DatabaseConfiguration.TABLE_NAME);
+    }
+
+    public List<DistributedLock> getAllDistributedLocks() {
         List<String> propertiesToSelect = new ArrayList<>();
-        propertiesToSelect.add("Product");
-        propertiesToSelect.add("Price");
+        propertiesToSelect.add("name");
+//        propertiesToSelect.add("Price");
 
         ListEntitiesOptions options = new ListEntitiesOptions()
-                .setFilter(String.format("PartitionKey eq '%s'", StaticValues.PARTITION_KEY))
+                .setFilter(String.format("PartitionKey eq '%s'", DatabaseConfiguration.PARTITION_KEY))
                 .setSelect(propertiesToSelect);
 
+        List<DistributedLock> migrations = new ArrayList<>();
         for (TableEntity entity : tableClient.listEntities(options, null, null)) {
-            Map<String, Object> properties = entity.getProperties();
-            System.out.printf("%s: %.2f%n", properties.get("Product"), properties.get("Price"));
+//            Map<String, Object> properties = entity.getProperties();
+            var name = (String) entity.getProperty("name");
+            migrations.add(new DistributedLock(name));
+//            System.out.printf("%s: %.2f%n", properties.get("Product"), properties.get("Price"));
         }
+        return migrations;
+    }
+
+    // Pending impl.
+    private DistributedLock mapTableEntityToMigration(TableEntity entity) {
+        return null;
     }
 }

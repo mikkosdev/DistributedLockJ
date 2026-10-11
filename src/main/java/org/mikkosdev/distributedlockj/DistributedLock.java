@@ -1,6 +1,6 @@
 package org.mikkosdev.distributedlockj;
 
-import org.mikkosdev.distributedlockj.exception.LockInUseException;
+import org.mikkosdev.distributedlockj.exception.DistributedLockInUseException;
 
 public class DistributedLock {
 
@@ -10,18 +10,21 @@ public class DistributedLock {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
     /**
      * Try to acquire this lock
      * @return
      */
-    public void tryToAcquire() throws LockInUseException {
+    public void tryToAcquire() throws DistributedLockInUseException {
 
     }
 
     /**
      * Release the distributed lock
      */
-    public void release() throws LockInUseException {
+    public void release() throws DistributedLockInUseException {
 
     }
 }

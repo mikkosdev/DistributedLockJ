@@ -12,7 +12,7 @@ WORK IN PROGRESS - NOT YET RELEASED.
 - You try to acquire a distributed lock
 - A call is made to the distributed lock database to see if the lock can be acquired
   - If the lock can be acquired a lock is placed with the requested name and stored to database
-  - If not, the library returns an `LockInUseException`
+  - If not, the library returns an `DistributedLockInUseException`
 - After you're done with the lock, you must release it so that other's can use it
 
 ## To Do
