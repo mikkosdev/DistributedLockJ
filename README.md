@@ -2,7 +2,7 @@
 
 ![Java](https://img.shields.io/badge/Java-25+-blue?logo=openjdk&logoColor=white)
 ![Maven](https://img.shields.io/badge/build-Maven-red)
-![License](https://img.shields.io/badge/License-GPLv3-red.svg)
+![License](https://img.shields.io/badge/License-AGPLv3-purple.svg)
 
 WORK IN PROGRESS - NOT YET RELEASED.
 
