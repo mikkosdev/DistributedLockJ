@@ -11,14 +11,32 @@ public class DatabaseConfiguration {
 
     protected final Logger logger = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
-    public static final String TABLE_NAME = "distributedlock";
-    public static final String PARTITION_KEY = "ABC";
+    private String tableName = "distributedlock";
+    private String partitionKey = "ABC";
 
     // This is needed for operations where something is done to all locks
-    public static final String MASTER_LOCK_NAME = "masterlock-" + UUID.randomUUID();
+    private String masterLockName = "masterlock-" + UUID.randomUUID();
 
     public enum DatabaseClientEnum {
         AZURE_COSMOS_DB, AZURE_TABLE_STORAGE
+    }
+
+    public DatabaseConfiguration() {
+        setFromEnvironmentVariables();
+    }
+
+    // ------------------------------ Public methods ------------------------------
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public String getPartitionKey() {
+        return partitionKey;
+    }
+
+    public String getMasterLockName() {
+        return masterLockName;
     }
 
     public IDatabaseClient getDatabaseClient(DatabaseClientEnum client) {
@@ -29,5 +47,21 @@ public class DatabaseConfiguration {
                 return new AzureTableStorageClient();
         }
         throw new UnsupportedOperationException("No client found!");
+    }
+
+    // ------------------------------ Private methods ------------------------------
+
+    /**
+     * Initialize configuration from environment variables or use the default value if not set.
+     */
+    private void setFromEnvironmentVariables() {
+        var envTableName = System.getenv("DISTRIBUTEDLOCKJ_TABLE_NAME");
+        if (envTableName != null) tableName = envTableName;
+
+        var envPartitionKey = System.getenv("DISTRIBUTEDLOCKJ_PARTITION_KEY");
+        if (envPartitionKey != null) partitionKey = envPartitionKey;
+
+        var envMasterLockName = System.getenv("DISTRIBUTEDLOCKJ_MASTER_LOCK_NAME");
+        if (envMasterLockName != null) masterLockName = envMasterLockName;
     }
 }

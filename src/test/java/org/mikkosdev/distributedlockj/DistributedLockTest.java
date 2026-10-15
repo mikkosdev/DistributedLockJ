@@ -14,11 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DistributedLockTest extends DatabaseTest {
 
+    private DatabaseConfiguration dbConfig;
     private DistributedLockCollection lockCollection;
 
     @BeforeEach
     public void setup() {
         destroyDistributedLockTable();
+        dbConfig = new DatabaseConfiguration();
         lockCollection = new DistributedLockCollection();
     }
 
@@ -36,7 +38,7 @@ public class DistributedLockTest extends DatabaseTest {
         });
 
         // Assert
-        var rowCount = getRowCount(DatabaseConfiguration.TABLE_NAME);
+        var rowCount = getRowCount(dbConfig.getTableName());
         assertEquals(1, rowCount);
     }
 
@@ -55,7 +57,7 @@ public class DistributedLockTest extends DatabaseTest {
             DistributedLock dlock = lockCollection.tryAcquire("Hello");
         });
 
-        var rowCount = getRowCount(DatabaseConfiguration.TABLE_NAME);
+        var rowCount = getRowCount(dbConfig.getTableName());
         assertEquals(1, rowCount);
     }
 
@@ -81,7 +83,6 @@ public class DistributedLockTest extends DatabaseTest {
     }
 
     @Test
-    @Disabled
     public void testDeletingAllLocks() {
         // Create a lock
         DistributedLock dlock = lockCollection.tryAcquire("Hello");

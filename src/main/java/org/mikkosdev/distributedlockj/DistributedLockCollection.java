@@ -12,11 +12,12 @@ public class DistributedLockCollection {
 
     protected final Logger logger = LoggerFactory.getLogger(DistributedLockCollection.class);
 
-    private List<DistributedLock> locks = new ArrayList<>();
+    private DatabaseConfiguration dbConfig;
     private IDatabaseClient dbClient;
+    private List<DistributedLock> locks = new ArrayList<>();
 
     public DistributedLockCollection() {
-        var dbConfig = new DatabaseConfiguration();
+        dbConfig = new DatabaseConfiguration();
         dbClient = dbConfig.getDatabaseClient(DatabaseConfiguration.DatabaseClientEnum.AZURE_TABLE_STORAGE);
     }
 
@@ -38,7 +39,7 @@ public class DistributedLockCollection {
     public void releaseAll() {
         logger.debug("Deleting all distributed locks");
 
-        var lock = tryAcquire(DatabaseConfiguration.MASTER_LOCK_NAME);
+        var lock = tryAcquire(dbConfig.getMasterLockName());
         dbClient.deleteAllDistributedLocks();
         release(lock);
     }

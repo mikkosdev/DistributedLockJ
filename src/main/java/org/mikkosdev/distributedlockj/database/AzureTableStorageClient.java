@@ -24,6 +24,7 @@ public class AzureTableStorageClient implements IDatabaseClient {
 
     protected final Logger logger = LoggerFactory.getLogger(AzureTableStorageClient.class);
 
+    protected DatabaseConfiguration dbConfig;
     protected TableServiceClient tableServiceClient;
     protected TableClient tableClient;
 
@@ -37,6 +38,7 @@ public class AzureTableStorageClient implements IDatabaseClient {
                     TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;""";
 
     public AzureTableStorageClient() {
+        dbConfig = new DatabaseConfiguration();
         tableServiceClient = new TableServiceClientBuilder()
                 .connectionString(localDevelopmentInstance)    // TODO: magic number
                 .buildClient();
@@ -45,15 +47,11 @@ public class AzureTableStorageClient implements IDatabaseClient {
     }
 
     private void initialize() {
-        tableClient = tableServiceClient.createTableIfNotExists(DatabaseConfiguration.TABLE_NAME);
-    }
-
-    private void getTableContents() {
-
+        tableClient = tableServiceClient.createTableIfNotExists(dbConfig.getTableName());
     }
 
     public void addDistributedLock(DistributedLock distributedLock) {
-        TableEntity entity = new TableEntity(DatabaseConfiguration.PARTITION_KEY, distributedLock.getName())
+        TableEntity entity = new TableEntity(dbConfig.getPartitionKey(), distributedLock.getName())
                 .addProperty("name", distributedLock.getName());
         try {
             tableClient.createEntity(entity);
@@ -67,7 +65,7 @@ public class AzureTableStorageClient implements IDatabaseClient {
 
     public void deleteDistributedLock(DistributedLock distributedLock) {
         try {
-            tableClient.deleteEntity(DatabaseConfiguration.PARTITION_KEY, distributedLock.getName());
+            tableClient.deleteEntity(dbConfig.getPartitionKey(), distributedLock.getName());
         } catch (TableServiceException e) {
             TableErrorCode errCode = e.getValue().getErrorCode();
             if (errCode == TableErrorCode.ENTITY_NOT_FOUND) {
@@ -83,7 +81,7 @@ public class AzureTableStorageClient implements IDatabaseClient {
 
     @Override
     public void destroyDistributedLockTable() {
-        tableServiceClient.deleteTable(DatabaseConfiguration.TABLE_NAME);
+        tableServiceClient.deleteTable(dbConfig.getTableName());
     }
 
     public void deleteAllDistributedLocks() {
@@ -103,7 +101,7 @@ public class AzureTableStorageClient implements IDatabaseClient {
         propertiesToSelect.add("name");
 
         ListEntitiesOptions options = new ListEntitiesOptions()
-                .setFilter(String.format("PartitionKey eq '%s'", DatabaseConfiguration.PARTITION_KEY))
+                .setFilter(String.format("PartitionKey eq '%s'", dbConfig.getPartitionKey()))
                 .setSelect(propertiesToSelect);
 
         List<DistributedLock> distributedLocks = new ArrayList<>();

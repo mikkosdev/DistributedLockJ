@@ -17,14 +17,15 @@ WORK IN PROGRESS - NOT YET RELEASED.
 
 ## To Do
 
-- [ ] Add support for removing old entries during startup
-  - Use a special 'maintenance' dlock for that which locks all entries for the process using the lock
+- [X] Add support for removing old entries during startup
+  - Use a special 'master' dlock for that which locks all entries for the process using the lock
 - [X] Add support for Azure Storage Account
 - [ ] Add support for Azure Cosmos DB
-- [ ] Plan how to provide configuration
-  - Environment variables
-  - Should settings file be supported?
+- [ ] Add support for configuring the library
+  - [X] Environment variables
+  - [ ] Should settings file be supported?
 - [ ] Investigate if transactions are needed
   - Azure Table Storage (not needed)
   - Azure Cosmos DB?
 - [ ] Add support for try-with-resources syntax
+- [ ] Do we need a factory method to get instance of DatabaseConfiguration to avoid initializing the object multiple times (cf. dependency injection, unit tests, etc)
