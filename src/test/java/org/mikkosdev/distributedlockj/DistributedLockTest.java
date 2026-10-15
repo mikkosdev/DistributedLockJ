@@ -7,10 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mikkosdev.distributedlockj.exception.DistributedLockInUseException;
 import org.mikkosdev.distributedlockj.exception.DistributedLockNotFoundException;
 
-import javax.xml.crypto.Data;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Unit test for simple App.
@@ -81,5 +78,21 @@ public class DistributedLockTest extends DatabaseTest {
         assertThrows(DistributedLockNotFoundException.class, () -> {
             dlock.release();
         });
+    }
+
+    @Test
+    @Disabled
+    public void testDeletingAllLocks() {
+        // Create a lock
+        DistributedLock dlock = lockCollection.tryAcquire("Hello");
+        var locks = lockCollection.getAll();
+        assertEquals(1, locks.size());
+
+        // Release (delete) all locks
+        lockCollection.releaseAll();
+
+        // Verify if any locks exist
+        locks = lockCollection.getAll();
+        assertEquals(0, locks.size());
     }
 }

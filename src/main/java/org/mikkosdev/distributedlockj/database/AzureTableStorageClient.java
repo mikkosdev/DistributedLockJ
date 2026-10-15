@@ -86,6 +86,18 @@ public class AzureTableStorageClient implements IDatabaseClient {
         tableServiceClient.deleteTable(DatabaseConfiguration.TABLE_NAME);
     }
 
+    public void deleteAllDistributedLocks() {
+        var tableEntities = tableClient.listEntities();
+        for (TableEntity tableEntity : tableEntities) {
+            try {
+                tableClient.deleteEntity(tableEntity);
+            } catch (TableServiceException e) {
+                logger.error("Unable to delete distribute lock entity: " + e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public List<DistributedLock> getAllDistributedLocks() {
         List<String> propertiesToSelect = new ArrayList<>();
         propertiesToSelect.add("name");
@@ -94,12 +106,12 @@ public class AzureTableStorageClient implements IDatabaseClient {
                 .setFilter(String.format("PartitionKey eq '%s'", DatabaseConfiguration.PARTITION_KEY))
                 .setSelect(propertiesToSelect);
 
-        List<DistributedLock> migrations = new ArrayList<>();
+        List<DistributedLock> distributedLocks = new ArrayList<>();
         for (TableEntity entity : tableClient.listEntities(options, null, null)) {
             var name = (String) entity.getProperty("name");
-            migrations.add(new DistributedLock(name));
+            distributedLocks.add(new DistributedLock(name));
         }
-        return migrations;
+        return distributedLocks;
     }
 
     // Pending impl.

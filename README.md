@@ -19,7 +19,7 @@ WORK IN PROGRESS - NOT YET RELEASED.
 
 - [ ] Add support for removing old entries during startup
   - Use a special 'maintenance' dlock for that which locks all entries for the process using the lock
-- [ ] Add support for Azure Storage Account
+- [X] Add support for Azure Storage Account
 - [ ] Add support for Azure Cosmos DB
 - [ ] Plan how to provide configuration
   - Environment variables
@@ -27,3 +27,4 @@ WORK IN PROGRESS - NOT YET RELEASED.
 - [ ] Investigate if transactions are needed
   - Azure Table Storage (not needed)
   - Azure Cosmos DB?
+- [ ] Add support for try-with-resources syntax

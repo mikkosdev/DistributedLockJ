@@ -34,4 +34,19 @@ public class DistributedLockCollection {
 
         dbClient.deleteDistributedLock(distributedLock);
     }
+
+    public void releaseAll() {
+        logger.debug("Deleting all distributed locks");
+
+        var lock = tryAcquire(DatabaseConfiguration.MASTER_LOCK_NAME);
+        dbClient.deleteAllDistributedLocks();
+        release(lock);
+    }
+
+    public List<DistributedLock> getAll() {
+        logger.debug("Getting all distributed locks");
+
+        var locks = dbClient.getAllDistributedLocks();
+        return locks;
+    }
 }
