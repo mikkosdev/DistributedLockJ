@@ -5,13 +5,12 @@ import org.mikkosdev.distributedlockj.database.IDatabaseClient;
 /**
  * This super-class has utility methods that help to test database functionality.
  */
-public class DatabaseTest {
+public abstract class AbstractDatabaseTest {
 
     protected IDatabaseClient dbClient;
 
-    protected DatabaseTest() {
+    protected AbstractDatabaseTest() {
         var dbConfig = new DatabaseConfiguration();
-        dbClient = dbConfig.getDatabaseClient(DatabaseConfiguration.DatabaseClientEnum.AZURE_TABLE_STORAGE);
     }
 
     // Add row to database

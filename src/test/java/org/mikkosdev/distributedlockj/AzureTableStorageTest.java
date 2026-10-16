@@ -12,10 +12,15 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test for simple App.
  */
-public class DistributedLockTest extends DatabaseTest {
+public class AzureTableStorageTest extends AbstractDatabaseTest {
 
     private DatabaseConfiguration dbConfig;
     private DistributedLockCollection lockCollection;
+
+    public AzureTableStorageTest() {
+        dbConfig = new DatabaseConfiguration();
+        dbClient = dbConfig.getDatabaseClient(DatabaseConfiguration.DatabaseClientEnum.AZURE_TABLE_STORAGE);
+    }
 
     @BeforeEach
     public void setup() {

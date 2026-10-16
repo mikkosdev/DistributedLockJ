@@ -18,7 +18,7 @@ WORK IN PROGRESS - NOT YET RELEASED.
 ## To Do
 
 - [X] Add support for removing old entries during startup
-  - Use a special 'master' dlock for that which locks all entries for the process using the lock
+  - Use a special 'super' lock
 - [X] Add support for Azure Storage Account
 - [ ] Add support for Azure Cosmos DB
 - [ ] Add support for configuring the library
@@ -29,3 +29,10 @@ WORK IN PROGRESS - NOT YET RELEASED.
   - Azure Cosmos DB?
 - [ ] Add support for try-with-resources syntax
 - [ ] Do we need a factory method to get instance of DatabaseConfiguration to avoid initializing the object multiple times (cf. dependency injection, unit tests, etc)
+- [ ] Make database selectable (currently hardcoded)
+- [ ] Check exception handling in database implementation classes
+
+# Notes
+
+How to add Cosmos DB SSL certificate to the Java keystore for local development:
+https://learn.microsoft.com/en-us/troubleshoot/azure/cosmos-db/tools-connectors/emulator
